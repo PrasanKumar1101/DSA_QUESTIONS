@@ -15,12 +15,19 @@ code ~/Documents/DSA_QUESTIONS
 ## 3. Install + log in to leetcode-cli (needed for Submit & Push)
 ```bash
 npm i -g vsc-leetcode-cli          # provides the `leetcode` command
-leetcode plugin -i cookie          # enable cookie login (LeetCode killed user/pass)
-leetcode user -c                   # paste your session cookie when prompted
+leetcode user -c                   # cookie login (built in — do NOT run `plugin -i cookie`)
 ```
-**Getting the cookie:** log in at leetcode.com → open DevTools → Application → Cookies → copy
-`LEETCODE_SESSION` and `csrftoken`. `leetcode user -c` will ask for both.
+> Do **not** run `leetcode plugin -i cookie` — that plugin's download URL is dead (404) and it
+> isn't needed; cookie login is built into the core.
+
+`leetcode user -c` prompts for two things:
+- **login** → your LeetCode username
+- **cookie** → one line containing **both** values: `csrftoken=<CSRF>; LEETCODE_SESSION=<SESSION>`
+
+**Getting the two values:** log in at leetcode.com → **F12** → **Application → Cookies →
+`https://leetcode.com`** → copy the `csrftoken` and `LEETCODE_SESSION` values, paste them combined.
 Verify: `leetcode user` should print your username. (Cookie expires every few weeks — re-run `leetcode user -c`.)
+The `padLevels` deprecation warning is harmless.
 
 > Submitting via `leetcode submit` **counts on your LeetCode profile** — no separate website step.
 

@@ -11,6 +11,7 @@ fi
 FILE="$(realpath "$FILE")"
 FOLDER="$(dirname "$FILE")"
 NAME="$(basename "$FOLDER")"
+FNAME="$(basename "$FILE")"          # e.g. solution.cpp or approach-2.cpp
 ROOT="$(git -C "$FOLDER" rev-parse --show-toplevel 2>/dev/null)"
 if [[ -z "$ROOT" ]]; then echo "✘ not inside a git repo"; exit 1; fi
 
@@ -45,7 +46,7 @@ if grep -q "@lc app=leetcode" "$FILE"; then
   if echo "$LOG" | grep -qiE "accepted|✔ .* cases passed"; then
     green "✔ Accepted on LeetCode (profile updated)"
     RUNTIME="$(echo "$LOG" | grep -oiE "[0-9]+ ms" | head -1)"
-    commit_push "solve: ${NAME} [Accepted${RUNTIME:+, $RUNTIME}]"
+    commit_push "solve: ${NAME}/${FNAME} [Accepted${RUNTIME:+, $RUNTIME}]"
   else
     red "✘ Not accepted — NOT pushing. Fix and re-run."
     echo "  (tip: run a quick test first with the LeetCode extension, or 'leetcode test \"$FILE\"')"
@@ -53,5 +54,5 @@ if grep -q "@lc app=leetcode" "$FILE"; then
   fi
 else
   bold "→ non-LeetCode problem (GeeksforGeeks/misc): skipping submit, pushing solution."
-  commit_push "solve: ${NAME}"
+  commit_push "solve: ${NAME}/${FNAME}"
 fi

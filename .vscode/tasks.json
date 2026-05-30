@@ -16,6 +16,14 @@
       "args": ["${workspaceFolder}/tooling/lc-test.sh", "${file}"],
       "presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
       "problemMatcher": []
+    },
+    {
+      "label": "DSA: New Approach",
+      "type": "shell",
+      "command": "bash",
+      "args": ["${workspaceFolder}/tooling/new-approach.sh", "${file}"],
+      "presentation": { "reveal": "silent", "panel": "dedicated", "clear": true },
+      "problemMatcher": []
     }
   ]
 }

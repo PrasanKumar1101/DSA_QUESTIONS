@@ -1,0 +1,6 @@
+# extension build artifacts
+tooling/dsa-bank/node_modules/
+tooling/dsa-bank/dist/
+*.map
+# OS / editor
+.DS_Store

@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# Submit a solution to LeetCode and, if Accepted, commit + push to GitHub.
+# Usage:  bash tooling/lc-submit.sh <path/to/solution.cpp>
+# GeeksforGeeks / non-LeetCode problems skip submission and just push.
+set -uo pipefail
+
+FILE="${1:-}"
+if [[ -z "$FILE" || ! -f "$FILE" ]]; then
+  echo "✘ usage: lc-submit.sh <solution-file>"; exit 1
+fi
+FILE="$(realpath "$FILE")"
+FOLDER="$(dirname "$FILE")"
+NAME="$(basename "$FOLDER")"
+ROOT="$(git -C "$FOLDER" rev-parse --show-toplevel 2>/dev/null)"
+if [[ -z "$ROOT" ]]; then echo "✘ not inside a git repo"; exit 1; fi
+
+bold(){ printf "\033[1m%s\033[0m\n" "$1"; }
+green(){ printf "\033[32m%s\033[0m\n" "$1"; }
+red(){ printf "\033[31m%s\033[0m\n" "$1"; }
+
+commit_push(){ # $1 = commit message
+  ( cd "$ROOT"
+    git add "$FOLDER"
+    if git diff --cached --quiet; then
+      echo "• nothing new to commit";
+    else
+      git commit -q -m "$1" && green "✔ committed: $1"
+    fi
+    bold "→ pushing to origin/main…"
+    if git push -q origin HEAD:main; then green "✔ pushed to GitHub"; else red "✘ push failed (check: ssh -T git@github-personal)"; exit 1; fi
+  )
+}
+
+# --- LeetCode problem? (has the @lc header) ---
+if grep -q "@lc app=leetcode" "$FILE"; then
+  if ! command -v leetcode >/dev/null 2>&1; then
+    red "✘ leetcode-cli not found."
+    echo "  install:  npm i -g vsc-leetcode-cli"
+    echo "  then log in (see SETUP.md):  leetcode plugin -i cookie && leetcode user -c"
+    exit 1
+  fi
+  bold "→ submitting $NAME to LeetCode…"
+  LOG="$(leetcode submit "$FILE" 2>&1)"
+  echo "$LOG"
+  if echo "$LOG" | grep -qiE "accepted|✔ .* cases passed"; then
+    green "✔ Accepted on LeetCode (profile updated)"
+    RUNTIME="$(echo "$LOG" | grep -oiE "[0-9]+ ms" | head -1)"
+    commit_push "solve: ${NAME} [Accepted${RUNTIME:+, $RUNTIME}]"
+  else
+    red "✘ Not accepted — NOT pushing. Fix and re-run."
+    echo "  (tip: run a quick test first with the LeetCode extension, or 'leetcode test \"$FILE\"')"
+    exit 1
+  fi
+else
+  bold "→ non-LeetCode problem (GeeksforGeeks/misc): skipping submit, pushing solution."
+  commit_push "solve: ${NAME}"
+fi

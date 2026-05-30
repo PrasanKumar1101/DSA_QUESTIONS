@@ -1,0 +1,46 @@
+{
+  "name": "dsa-bank",
+  "displayName": "DSA Bank",
+  "description": "Open DSA Launchpad problems in VS Code: scaffold folder + fetch LeetCode description, then submit & push in one command.",
+  "version": "0.1.0",
+  "publisher": "prateek",
+  "engines": { "vscode": "^1.75.0" },
+  "categories": ["Other"],
+  "activationEvents": ["onUri"],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "dsa-bank.submitPush",
+        "title": "DSA: Submit to LeetCode & Push",
+        "category": "DSA"
+      },
+      {
+        "command": "dsa-bank.openLaunchpad",
+        "title": "DSA: Open Launchpad",
+        "category": "DSA"
+      }
+    ],
+    "configuration": {
+      "title": "DSA Bank",
+      "properties": {
+        "dsaBank.defaultLanguage": {
+          "type": "string",
+          "default": "cpp",
+          "enum": ["cpp", "python3", "java", "javascript"],
+          "description": "Language used for scaffolded solution files."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package --no-dependencies -o dsa-bank.vsix"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.75.0",
+    "typescript": "^5.4.0"
+  }
+}
